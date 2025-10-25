@@ -2,7 +2,12 @@
 <html lang="vi">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="./vite.svg" />
+    <!--
+      Thẻ <base> chỉ định URL cơ sở cho tất cả các đường dẫn tương đối trong trang.
+      Điều này rất quan trọng khi triển khai trên một thư mục con như /AIHOCTAP/ trên GitHub Pages.
+    -->
+    <base href="/AIHOCTAP/" />
+    <link rel="icon" type="image/svg+xml" href="vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Luyện Đọc Tiếng Việt Lớp 2</title>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -22,7 +27,8 @@
     <!-- 
       Trình duyệt yêu cầu một tệp JavaScript. Môi trường phát triển
       sẽ tự động biên dịch index.tsx thành index.js.
+      Với thẻ <base>, src="index.js" sẽ được phân giải thành /AIHOCTAP/index.js
     -->
-    <script type="module" src="./index.js"></script>
+    <script type="module" src="index.js"></script>
   </body>
 </html>
