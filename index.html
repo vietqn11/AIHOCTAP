@@ -99,10 +99,6 @@ const MATH_LESSONS_VOL1 = [
 
 
 // --- START OF INLINED services/geminiService.ts ---
-if (!process.env.API_KEY) {
-    console.warn("API_KEY environment variable not set.");
-}
-const geminiAI = new GoogleGenAI({ apiKey: process.env.API_KEY });
 async function evaluateReading(passageText, transcript) {
     const model = "gemini-2.5-pro";
     const prompt = `
@@ -122,6 +118,7 @@ async function evaluateReading(passageText, transcript) {
         YÊU CẦU QUAN TRỌNG: Chỉ trả về duy nhất một đối tượng JSON hợp lệ, không có bất kỳ văn bản giải thích, markdown formatting (như \`\`\`json) hay ký tự nào khác bao quanh.
     `;
     try {
+        const geminiAI = new GoogleGenAI({ apiKey: process.env.API_KEY });
         const response = await geminiAI.models.generateContent({
             model,
             contents: prompt,
@@ -170,6 +167,7 @@ async function extractDifficultWords(passageText) {
     Bài đọc: "${passageText}"
     YÊU CẦU QUAN TRỌNG: Chỉ trả về một mảng JSON chứa chính xác 5 chuỗi là các từ/cụm từ đó. Ví dụ: ["khuỷu tay", "ngoằn ngoèo", "sưởi nắng", "lấp lánh", "uy nghi"]`;
     try {
+        const geminiAI = new GoogleGenAI({ apiKey: process.env.API_KEY });
         const response = await geminiAI.models.generateContent({
             model,
             contents: prompt,
@@ -205,6 +203,7 @@ async function getWritingFeedback(topic, studentText) {
     Ví dụ: { "positiveFeedback": "Câu văn 'chú mèo mướp có bộ lông mềm như nhung' của con rất hay và giàu hình ảnh!", "suggestions": ["Con có thể kể thêm về một kỷ niệm vui của con với chú mèo.", "Lần tới, con thử dùng thêm các từ chỉ màu sắc xem sao nhé."] }
   `;
     try {
+        const geminiAI = new GoogleGenAI({ apiKey: process.env.API_KEY });
         const response = await geminiAI.models.generateContent({
             model,
             contents: prompt,
@@ -247,6 +246,7 @@ async function getSentenceSuggestions(topic, currentText) {
         YÊU CẦU QUAN TRỌNG: Chỉ trả về một mảng JSON chứa chính xác 3 chuỗi câu văn. Ví dụ: ["Câu gợi ý 1.", "Câu gợi ý 2.", "Câu gợi ý 3."]
     `;
     try {
+        const geminiAI = new GoogleGenAI({ apiKey: process.env.API_KEY });
         const response = await geminiAI.models.generateContent({
             model,
             contents: prompt,
@@ -288,6 +288,7 @@ async function getVocabularySuggestion(studentText) {
       YÊU CẦU QUAN TRỌNG: Chỉ trả về một đối tượng JSON hợp lệ hoặc một chuỗi rỗng, không có markdown hay giải thích gì thêm.
     `;
     try {
+        const geminiAI = new GoogleGenAI({ apiKey: process.env.API_KEY });
         const response = await geminiAI.models.generateContent({
             model,
             contents: prompt,
@@ -340,6 +341,7 @@ async function getOutlineStep(topic, currentOutline) {
         return { question: "Dàn ý của con đã hoàn tất rồi!", isFinished: true };
     }
     try {
+        const geminiAI = new GoogleGenAI({ apiKey: process.env.API_KEY });
         const response = await geminiAI.models.generateContent({
             model,
             contents: prompt,
@@ -377,6 +379,7 @@ async function generateStructuredOutline(topic, outlineSteps) {
       - Nêu cảm nghĩ của em: em rất yêu quý chú mèo và sẽ chăm sóc chú cẩn thận.
     `;
     try {
+        const geminiAI = new GoogleGenAI({ apiKey: process.env.API_KEY });
         const response = await geminiAI.models.generateContent({
             model,
             contents: prompt,
@@ -392,6 +395,7 @@ async function generateStoryImage(topic) {
     const model = 'gemini-2.5-flash-image';
     const prompt = `Vẽ một bức tranh minh họa câu chuyện đầy màu sắc, vui nhộn, và thân thiện cho trẻ em lớp 2, theo phong cách hoạt hình. Bức tranh phải rõ ràng và đầy cảm hứng. Chủ đề là: "${topic}"`;
     try {
+        const geminiAI = new GoogleGenAI({ apiKey: process.env.API_KEY });
         const response = await geminiAI.models.generateContent({
             model,
             contents: {
@@ -427,6 +431,7 @@ async function getRolePlayFeedback(scriptTitle, userLines) {
   Hãy đưa ra một lời nhận xét ngắn gọn (2-3 câu), tích cực và vui vẻ. Khen ngợi sự cố gắng của bé và có thể đưa ra một gợi ý nhỏ về ngữ điệu nếu cần. Ví dụ: "Con nhập vai Rùa rất đạt! Con đã đọc rất rõ ràng và đầy quyết tâm. Lần sau con thử đọc chậm hơn một chút nữa để thể hiện sự kiên trì của Rùa nhé!".
   Chỉ trả về duy nhất một chuỗi văn bản là lời nhận xét.`;
     try {
+        const geminiAI = new GoogleGenAI({ apiKey: process.env.API_KEY });
         const response = await geminiAI.models.generateContent({ model, contents: prompt });
         return { feedback: response.text };
     }
@@ -450,6 +455,7 @@ async function evaluateHandwrittenText(imageBase64) {
       "suggestions": ["Gợi ý 1", "Gợi ý 2"]
   }`;
     try {
+        const geminiAI = new GoogleGenAI({ apiKey: process.env.API_KEY });
         const response = await geminiAI.models.generateContent({
             model,
             contents: {
@@ -503,6 +509,7 @@ async function evaluateMentalMathAnswer(problem, studentAnswerText) {
       }
     `;
     try {
+        const geminiAI = new GoogleGenAI({ apiKey: process.env.API_KEY });
         const response = await geminiAI.models.generateContent({
             model,
             contents: prompt,
@@ -550,6 +557,7 @@ async function generateWordProblem(lesson) {
       }
     `;
     try {
+        const geminiAI = new GoogleGenAI({ apiKey: process.env.API_KEY });
         const response = await geminiAI.models.generateContent({
             model,
             contents: prompt,
@@ -597,6 +605,7 @@ async function evaluateWordProblemAnswer(problem, studentAnswerText) {
       }
     `;
     try {
+        const geminiAI = new GoogleGenAI({ apiKey: process.env.API_KEY });
         const response = await geminiAI.models.generateContent({
             model,
             contents: prompt,
@@ -640,6 +649,7 @@ async function getWordProblemHint(problem) {
       }
     `;
     try {
+        const geminiAI = new GoogleGenAI({ apiKey: process.env.API_KEY });
         const response = await geminiAI.models.generateContent({
             model,
             contents: prompt,
@@ -668,6 +678,7 @@ async function getWordProblemHint(problem) {
 async function getSimpleAIResponse(prompt) {
     const model = "gemini-2.5-flash";
     try {
+        const geminiAI = new GoogleGenAI({ apiKey: process.env.API_KEY });
         const response = await geminiAI.models.generateContent({ model, contents: prompt });
         return response.text;
     }
@@ -703,6 +714,7 @@ async function getTypingPracticeSentence() {
 async function generateColoringPage(prompt) {
     const fullPrompt = `Tạo một trang tô màu đơn giản cho trẻ em với các đường nét đen đậm, nền trắng, không có bóng mờ, theo phong cách sách tô màu, chất lượng cao. Chủ đề là: ${prompt}`;
     try {
+        const geminiAI = new GoogleGenAI({ apiKey: process.env.API_KEY });
         const response = await geminiAI.models.generateContent({
             model: 'gemini-2.5-flash-image',
             contents: {
@@ -726,6 +738,7 @@ async function generateColoringPage(prompt) {
 }
 async function getTTS(text) {
     try {
+        const geminiAI = new GoogleGenAI({ apiKey: process.env.API_KEY });
         const response = await geminiAI.models.generateContent({
             model: "gemini-2.5-flash-preview-tts",
             contents: [{ parts: [{ text: text }] }],
