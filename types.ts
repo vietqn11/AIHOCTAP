@@ -1,63 +1,27 @@
-export enum Page {
-    Login,
-    Home,
-    ReadingHome,
-    PassageSelection,
-    DifficultWords,
-    Reading,
-    Result,
-    RolePlayScriptSelection,
-    RolePlayReading,
-    RolePlayResult,
-    WritingHome,
-    WritingTopicSelection,
-    WritingAssistance,
-    WritingResult,
-    HandwritingEvaluation,
-    WritingOutline,
-    WriteFromImage,
-    MathHome,
-    MentalMath,
-    WordProblemLessonSelection,
-    WordProblems,
-    NatureHome,
-    EthicsHome,
-    ArtHome,
-    MusicHome,
-    PEHome,
-    ExperienceHome,
-    InformaticsHome,
-    NatureAndSociety,
-    Ethics,
-    Art,
-    Music,
-    PE,
-    Experience,
-    Informatics,
-    ObjectIdentification,
-    EthicalDilemma,
-    ArtIdea,
-    ImageGeneration,
+// FIX: create and export all necessary types and re-export Page from constants to fix module resolution errors.
+export { Page } from './constants';
 
-    // New Intelligent Feature Pages
-    WritingEvaluationResult,
-    ReadingComprehension,
-}
-
-export interface User {
+export type User = {
     name: string;
     className: string;
-}
+};
 
-export interface PageProps {
-    navigate: (page: Page, context?: any) => void;
-    context: any;
-    user: User;
+export type PageProps = {
+    navigate: (page: string, context?: any) => void;
     goBack: () => void;
     goHome: () => void;
-}
+    user: User;
+    context?: any;
+};
 
-export interface ReadingEvaluation {
+export type Passage = {
+    id: number;
+    title: string;
+    volume: number;
+    content: string;
+};
+
+export type ReadingEvaluation = {
     totalScore: number;
     fluency: number;
     pronunciation: number;
@@ -65,124 +29,76 @@ export interface ReadingEvaluation {
     wordsPerMinute: number;
     generalFeedback: string;
     positivePoints: string;
-    wordsToImprove: { word: string; context: string }[];
-}
+    wordsToImprove: {
+        word: string;
+        context: string;
+    }[];
+};
 
-export interface ReadingComprehensionQuestion {
-    question: string;
-    options: string[];
-    correctOptionIndex: number;
-}
-
-
-export interface Passage {
-    id: number;
-    title: string;
-    volume: number;
-    content: string;
-}
-
-export interface DialogueScript {
-    id: number;
-    title: string;
-    characters: string[];
-    script: { character: 'USER' | 'AI'; line: string }[];
-}
-
-
-export interface WritingFeedback {
-    positiveFeedback: string;
-    suggestions: string[];
-}
-
-export interface WritingEvaluation {
+export type WritingEvaluation = {
     contentScore: number;
     structureScore: number;
     wordingScore: number;
     creativityScore: number;
     feedback: string;
     imageUrl: string;
-}
+};
 
-
-export interface VocabularySuggestion {
-    originalWord: string;
-    suggestedWord: string;
-    explanation: string;
-    example: string;
-}
-
-export interface OutlineStep {
-    question: string;
-    userResponse: string;
-}
-
-export interface StoryImage {
-    prompt: string;
-    imageUrl: string;
-}
-
-export interface RolePlayFeedback {
-    feedback: string;
-}
-
-export interface RolePlayHistoryLine {
-    original: string;
-    spoken: string;
-}
-
-export interface HandwrittenEvaluation {
+export type HandwrittenEvaluation = {
     transcribedText: string;
     positiveFeedback: string;
     suggestions: string[];
     imageUrl: string;
-}
+};
 
-export interface MentalMathProblem {
+
+export type RolePlayHistoryLine = {
+    original: string;
+    spoken: string;
+};
+
+export type MentalMathProblem = {
     questionText: string;
     answer: number;
-    operand1?: number; 
-    operand2?: number; 
-}
+};
 
-export interface MentalMathEvaluation {
+export type MentalMathEvaluation = {
     isCorrect: boolean;
     feedbackText: string;
-}
+};
 
-
-export interface WordProblem {
+export type WordProblem = {
     questionText: string;
     answer: number;
-}
+};
 
-export interface WordProblemEvaluation {
+export type WordProblemEvaluation = {
     isCorrect: boolean;
     feedbackText: string;
     explanation: string;
-}
+};
 
-export interface WordProblemHint {
+export type WordProblemHint = {
     hintText: string;
-}
+};
 
-export interface MathLesson {
-    id: number;
-    title: string;
-    description: string;
-}
-
-export interface ObjectIdentificationResult {
+export type ObjectIdentificationResult = {
     name: string;
     description: string;
     funFact: string;
-}
+};
 
-export interface EthicalDilemma {
+export type EthicalDilemma = {
     scenario: string;
     choices: string[];
-}
+};
 
-export interface EthicalFeedback {
+export type EthicalFeedback = {
     feedback: string;
-}
+};
+
+export type ReadingComprehensionQuestion = {
+    question: string;
+    options: string[];
+    correctOptionIndex: number;
+};
