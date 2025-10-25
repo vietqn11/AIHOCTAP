@@ -1,14 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { PageProps, MentalMathProblem, MentalMathEvaluation } from '../../types';
 import { generateMentalMathProblem } from '../../services/geminiService';
+import { submitMathResult } from '../../services/googleSheetsService';
 import Spinner from '../Spinner';
 
-const MentalMathPage = (props: PageProps) => {
+const MentalMathPage = ({ user }: PageProps) => {
     const [problem, setProblem] = useState<MentalMathProblem | null>(null);
     const [userAnswer, setUserAnswer] = useState('');
     const [evaluation, setEvaluation] = useState<MentalMathEvaluation | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [score, setScore] = useState(0);
+
+    const scoreRef = useRef(score);
+    scoreRef.current = score;
 
     const fetchNewProblem = async () => {
         setIsLoading(true);
@@ -27,7 +31,13 @@ const MentalMathPage = (props: PageProps) => {
 
     useEffect(() => {
         fetchNewProblem();
-    }, []);
+
+        return () => {
+            if (scoreRef.current > 0) {
+                submitMathResult(user, "Toán nhẩm", scoreRef.current);
+            }
+        };
+    }, [user]);
 
     const checkAnswer = () => {
         if (!problem) return;

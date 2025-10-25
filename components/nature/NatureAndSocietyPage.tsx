@@ -7,13 +7,15 @@ const NatureAndSocietyPage = (props: PageProps) => {
     const [question, setQuestion] = useState('');
     const [answer, setAnswer] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const persona = "một người kiểm lâm thân thiện, người giải thích những điều kỳ diệu của thiên nhiên cho một đứa trẻ";
+
 
     const handleAsk = async () => {
         if (question.trim() === '') return;
         setIsLoading(true);
         setAnswer('');
         try {
-            const response = await generateSimpleChatResponse('Tự nhiên và Xã hội', question);
+            const response = await generateSimpleChatResponse('Tự nhiên và Xã hội', question, persona);
             setAnswer(response);
         } catch (error) {
             setAnswer('Rất tiếc, đã có lỗi xảy ra. Vui lòng thử lại.');
@@ -25,7 +27,7 @@ const NatureAndSocietyPage = (props: PageProps) => {
     
     return (
         <div className="container mx-auto px-4 py-8 max-w-2xl">
-            <h2 className="text-3xl font-bold text-center text-gray-800 mb-8">Khám phá Tự nhiên & Xã hội</h2>
+            <h2 className="text-3xl font-bold text-center text-gray-800 mb-8">Trò chuyện cùng nhà khoa học</h2>
             <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-200">
                 <p className="text-center text-gray-600 mb-4">Em có thắc mắc gì về thế giới xung quanh không? Hãy hỏi ở đây nhé!</p>
                 <div className="flex gap-2">
@@ -44,6 +46,12 @@ const NatureAndSocietyPage = (props: PageProps) => {
                 {answer && !isLoading && (
                     <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-md">
                         <p className="text-gray-800 whitespace-pre-wrap">{answer}</p>
+                    </div>
+                )}
+                 {isLoading && question && (
+                    <div className="mt-6 flex justify-center items-center">
+                        <Spinner />
+                        <p className="ml-2 text-gray-600">Nhà khoa học đang suy nghĩ...</p>
                     </div>
                 )}
             </div>

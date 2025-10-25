@@ -38,6 +38,13 @@ import MusicPage from './components/music/MusicPage';
 import PEPage from './components/pe/PEPage';
 import ExperiencePage from './components/experience/ExperiencePage';
 import InformaticsPage from './components/informatics/InformaticsPage';
+import ObjectIdentificationPage from './components/nature/ObjectIdentificationPage';
+import EthicalDilemmaPage from './components/ethics/EthicalDilemmaPage';
+import ArtIdeaPage from './components/art/ArtIdeaPage';
+import ImageGenerationPage from './components/art/ImageGenerationPage';
+import WritingEvaluationResultPage from './components/writing/WritingEvaluationResultPage';
+import ReadingComprehensionPage from './components/reading/ReadingComprehensionPage';
+
 
 type HistoryState = {
   page: Page;
@@ -65,22 +72,24 @@ const App = () => {
       const savedUser = localStorage.getItem('grade2-assistant-user');
       if (savedUser) {
           setUser(JSON.parse(savedUser));
+      } else {
+        setHistory([{ page: Page.Login, context: null }]);
       }
   }, []);
 
-  const navigate = (page: Page, context: any = null) => {
+  const navigate = useCallback((page: Page, context: any = null) => {
     setHistory(prev => [...prev, { page, context }]);
-  };
+  }, []);
   
-  const goBack = () => {
+  const goBack = useCallback(() => {
     if (history.length > 1) {
       setHistory(prev => prev.slice(0, -1));
     }
-  };
+  }, [history.length]);
   
-  const goHome = () => {
+  const goHome = useCallback(() => {
     setHistory([{ page: Page.Home, context: null }]);
-  }
+  }, []);
 
   if (!user) {
     return <LoginPage onLogin={handleLogin} />;
@@ -90,8 +99,9 @@ const App = () => {
   const { page, context } = currentPageState;
   
   const renderPage = () => {
-    const props = { navigate, context, user };
+    const props = { navigate, context, user, goBack, goHome };
     switch (page) {
+        case Page.Login: return <LoginPage onLogin={handleLogin} />;
         case Page.Home: return <HomePage user={user} navigate={navigate} onLogout={handleLogout} />;
         case Page.ReadingHome: return <ReadingHomePage {...props} />;
         case Page.PassageSelection: return <PassageSelectionPage {...props} />;
@@ -126,6 +136,16 @@ const App = () => {
         case Page.PE: return <PEPage {...props} />;
         case Page.Experience: return <ExperiencePage {...props} />;
         case Page.Informatics: return <InformaticsPage {...props} />;
+        case Page.ObjectIdentification: return <ObjectIdentificationPage {...props} />;
+        case Page.EthicalDilemma: return <EthicalDilemmaPage {...props} />;
+        case Page.ArtIdea: return <ArtIdeaPage {...props} />;
+        case Page.ImageGeneration: return <ImageGenerationPage {...props} />;
+
+        // New Intelligent Feature Pages
+        case Page.WritingEvaluationResult: return <WritingEvaluationResultPage {...props} />;
+        case Page.ReadingComprehension: return <ReadingComprehensionPage {...props} />;
+
+
         default: return <HomePage user={user} navigate={navigate} onLogout={handleLogout} />;
     }
   };
@@ -141,21 +161,24 @@ const App = () => {
       [Page.PEHome]: "Giáo dục thể chất",
       [Page.ExperienceHome]: "Hoạt động Trải nghiệm",
       [Page.InformaticsHome]: "Tin học",
+      [Page.Result]: "Kết quả Luyện đọc",
+      [Page.ReadingComprehension]: "Kiểm tra Đọc hiểu",
+      [Page.WritingEvaluationResult]: "Kết quả Luyện viết",
   }
   
-  const showBackButton = history.length > 1;
-  const showHomeButton = page !== Page.Home;
+  const isLoginPage = !user || page === Page.Login;
+  const isHomePage = page === Page.Home;
 
   return (
     <div className="min-h-screen">
-        {page !== Page.Home && (
+        {!isLoginPage && !isHomePage && (
             <Header
                 title={pageTitleMap[page] || "Trợ lý học tập"}
                 user={user}
                 onLogout={handleLogout}
-                showBackButton={showBackButton}
+                showBackButton={history.length > 1}
                 onBack={goBack}
-                showHomeButton={showHomeButton}
+                showHomeButton={!isHomePage}
                 onHome={goHome}
             />
         )}

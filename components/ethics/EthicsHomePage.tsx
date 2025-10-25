@@ -6,10 +6,10 @@ import { EthicsIcon } from '../icons/Icons';
 const EthicsHomePage = ({ navigate }: PageProps) => {
     const activities = [
         {
-            name: "Tình huống đạo đức",
-            description: "Kể cho AI nghe một tình huống và nhận lời khuyên bổ ích.",
+            name: "Thử thách tình huống",
+            description: "Giải quyết các tình huống đạo đức và nhận lời khuyên từ AI.",
             icon: <EthicsIcon size="lg" />,
-            onClick: () => navigate(Page.Ethics),
+            onClick: () => navigate(Page.EthicalDilemma),
             color: "from-rose-500 to-red-600 focus:ring-red-300",
         },
     ];

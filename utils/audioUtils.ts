@@ -1,11 +1,38 @@
 let mediaRecorder: MediaRecorder | null = null;
 let audioChunks: Blob[] = [];
 
+const SUPPORTED_MIME_TYPES = [
+    'audio/mp4', // Preferred for Safari
+    'audio/webm',
+    'audio/ogg',
+];
+
+let selectedMimeType = 'audio/webm'; // Default
+
+export const getSupportedMimeType = () => {
+    if (typeof MediaRecorder === 'undefined') {
+        console.warn("MediaRecorder API not supported");
+        return 'audio/webm'; // return default
+    }
+    for (const type of SUPPORTED_MIME_TYPES) {
+        if (MediaRecorder.isTypeSupported(type)) {
+            selectedMimeType = type;
+            return type;
+        }
+    }
+    console.warn("No supported MIME type found, falling back to default");
+    return selectedMimeType;
+};
+
+// Initialize the mimeType once.
+getSupportedMimeType();
+
+
 export const startRecording = async (): Promise<void> => {
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            mediaRecorder = new MediaRecorder(stream);
+            mediaRecorder = new MediaRecorder(stream, { mimeType: selectedMimeType });
             audioChunks = [];
 
             mediaRecorder.ondataavailable = event => {
@@ -24,12 +51,19 @@ export const startRecording = async (): Promise<void> => {
 
 export const stopRecording = (): Promise<Blob> => {
     return new Promise(resolve => {
-        if (mediaRecorder) {
+        if (mediaRecorder && mediaRecorder.state !== 'inactive') {
             mediaRecorder.onstop = () => {
-                const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                const audioBlob = new Blob(audioChunks, { type: selectedMimeType });
                 resolve(audioBlob);
+                // Clean up stream tracks
+                if(mediaRecorder.stream) {
+                    mediaRecorder.stream.getTracks().forEach(track => track.stop());
+                }
             };
             mediaRecorder.stop();
+        } else {
+            // If already stopped or not initialized, resolve with an empty blob.
+            resolve(new Blob(audioChunks, { type: selectedMimeType }));
         }
     });
 };

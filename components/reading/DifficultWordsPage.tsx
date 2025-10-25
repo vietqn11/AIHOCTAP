@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { PageProps } from '../../types';
-import { identifyAndExplainDifficultWords } from '../../services/geminiService';
+import { identifyAndExplainDifficultWords, generateTextToSpeech } from '../../services/geminiService';
+import { playBase64Audio } from '../../utils/audioUtils';
 import Spinner from '../Spinner';
 import { SpeakerIcon } from '../icons/Icons';
 
@@ -15,6 +16,7 @@ const DifficultWordsPage = ({ context }: PageProps) => {
     const [words, setWords] = useState<DifficultWord[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [playingWord, setPlayingWord] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchWords = async () => {
@@ -32,6 +34,20 @@ const DifficultWordsPage = ({ context }: PageProps) => {
         };
         fetchWords();
     }, [passage.content]);
+
+    const handleListenToWord = async (word: string) => {
+        if (playingWord) return;
+        setPlayingWord(word);
+        try {
+            const audioBase64 = await generateTextToSpeech(word);
+            await playBase64Audio(audioBase64);
+        } catch (error) {
+            console.error("Failed to play audio for word:", error);
+            // You can add a user-facing error message here
+        } finally {
+            setPlayingWord(null);
+        }
+    };
 
     return (
         <div className="container mx-auto px-4 py-8">
@@ -55,8 +71,13 @@ const DifficultWordsPage = ({ context }: PageProps) => {
                         <div key={index} className="bg-white p-6 rounded-lg shadow-md border border-gray-200">
                             <div className="flex items-center mb-2">
                                 <h3 className="text-2xl font-bold text-blue-700">{word.word}</h3>
-                                <button className="ml-4 p-2 text-blue-600 hover:text-blue-800" title="Nghe phát âm">
-                                    <SpeakerIcon size="sm" />
+                                <button
+                                    onClick={() => handleListenToWord(word.word)}
+                                    disabled={!!playingWord}
+                                    className="ml-4 p-2 text-blue-600 hover:text-blue-800 disabled:opacity-50"
+                                    title="Nghe phát âm"
+                                >
+                                    {playingWord === word.word ? <Spinner size="sm" /> : <SpeakerIcon size="sm" />}
                                 </button>
                             </div>
                             <p className="text-gray-700 mb-2"><strong className="font-semibold">Giải nghĩa:</strong> {word.explanation}</p>

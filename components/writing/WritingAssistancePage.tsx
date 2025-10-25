@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Page, PageProps, WritingFeedback } from '../../types';
-import { provideWritingFeedback } from '../../services/geminiService';
+import { Page, PageProps, WritingEvaluation } from '../../types';
+import { evaluateWriting } from '../../services/geminiService';
 import Spinner from '../Spinner';
 
 const WritingAssistancePage = ({ navigate, context }: PageProps) => {
@@ -17,8 +17,8 @@ const WritingAssistancePage = ({ navigate, context }: PageProps) => {
         setIsLoading(true);
         setError(null);
         try {
-            const feedback: WritingFeedback = await provideWritingFeedback(text);
-            navigate(Page.WritingResult, { feedback, topic, writtenText: text });
+            const evaluation: WritingEvaluation = await evaluateWriting(text);
+            navigate(Page.WritingEvaluationResult, { evaluation, topic, writtenText: text });
         } catch (err) {
             setError('Không thể nhận góp ý. Vui lòng thử lại.');
             console.error(err);

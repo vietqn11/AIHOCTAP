@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Page, PageProps, ReadingEvaluation } from '../../types';
-import { startRecording, stopRecording, blobToBase64 } from '../../utils/audioUtils';
+// Fix: Import getSupportedMimeType to pass as an argument to evaluateReading.
+import { startRecording, stopRecording, blobToBase64, getSupportedMimeType } from '../../utils/audioUtils';
 import { evaluateReading } from '../../services/geminiService';
 import { MicIcon, StopCircleIcon } from '../icons/Icons';
 import Spinner from '../Spinner';
@@ -10,12 +11,14 @@ const ReadingPage = ({ navigate, context }: PageProps) => {
     const [isRecording, setIsRecording] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const recordingStartTimeRef = useRef<number | null>(null);
 
     const handleStartRecording = async () => {
         try {
             await startRecording();
             setIsRecording(true);
             setError(null);
+            recordingStartTimeRef.current = Date.now();
         } catch (err) {
             setError("Không thể truy cập micro. Vui lòng cấp quyền và thử lại.");
         }
@@ -25,9 +28,20 @@ const ReadingPage = ({ navigate, context }: PageProps) => {
         setIsRecording(false);
         setIsLoading(true);
         try {
+            const durationInSeconds = recordingStartTimeRef.current ? (Date.now() - recordingStartTimeRef.current) / 1000 : 0;
+            recordingStartTimeRef.current = null;
+            
             const audioBlob = await stopRecording();
+            if (audioBlob.size === 0 || durationInSeconds < 1) {
+                setError("Không ghi âm được gì. Em hãy thử lại nhé.");
+                setIsLoading(false);
+                return;
+           }
             const audioBase64 = await blobToBase64(audioBlob);
-            const evaluationResult: ReadingEvaluation = await evaluateReading(passage.content, audioBase64);
+            // Fix: Pass the mimeType to the evaluateReading function.
+            const mimeType = getSupportedMimeType();
+            // Fix: Pass durationInSeconds to evaluateReading
+            const evaluationResult: ReadingEvaluation = await evaluateReading(passage.content, audioBase64, mimeType, durationInSeconds);
             navigate(Page.Result, { evaluation: evaluationResult, passage });
         } catch (err) {
             setError("Đã có lỗi xảy ra trong quá trình xử lý. Vui lòng thử lại.");

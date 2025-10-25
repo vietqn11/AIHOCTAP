@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Page, PageProps, RolePlayHistoryLine } from '../../types';
 import { generateTextToSpeech, evaluateRolePlayReading } from '../../services/geminiService';
-import { startRecording, stopRecording, blobToBase64, playBase64Audio } from '../../utils/audioUtils';
+import { startRecording, stopRecording, blobToBase64, playBase64Audio, getSupportedMimeType } from '../../utils/audioUtils';
 import { MicIcon, StopCircleIcon, SpeakerIcon } from '../icons/Icons';
 import Spinner from '../Spinner';
 
@@ -67,7 +67,8 @@ const RolePlayReadingPage = ({ navigate, context }: PageProps) => {
         try {
             const audioBlob = await stopRecording();
             const audioBase64 = await blobToBase64(audioBlob);
-            const result = await evaluateRolePlayReading(currentLine.line, audioBase64);
+            const mimeType = getSupportedMimeType();
+            const result = await evaluateRolePlayReading(currentLine.line, audioBase64, mimeType);
             setHistory(prev => [...prev, { original: currentLine.line, spoken: result.transcribedText }]);
             // For simplicity, we just move on. A more complex version could check accuracy.
         } catch (error) {

@@ -34,6 +34,14 @@ export enum Page {
     PE,
     Experience,
     Informatics,
+    ObjectIdentification,
+    EthicalDilemma,
+    ArtIdea,
+    ImageGeneration,
+
+    // New Intelligent Feature Pages
+    WritingEvaluationResult,
+    ReadingComprehension,
 }
 
 export interface User {
@@ -41,11 +49,12 @@ export interface User {
     className: string;
 }
 
-// Fix: Add PageProps interface to be used by page components.
 export interface PageProps {
     navigate: (page: Page, context?: any) => void;
     context: any;
     user: User;
+    goBack: () => void;
+    goHome: () => void;
 }
 
 export interface ReadingEvaluation {
@@ -53,10 +62,18 @@ export interface ReadingEvaluation {
     fluency: number;
     pronunciation: number;
     accuracy: number;
+    wordsPerMinute: number;
     generalFeedback: string;
     positivePoints: string;
     wordsToImprove: { word: string; context: string }[];
 }
+
+export interface ReadingComprehensionQuestion {
+    question: string;
+    options: string[];
+    correctOptionIndex: number;
+}
+
 
 export interface Passage {
     id: number;
@@ -76,6 +93,15 @@ export interface DialogueScript {
 export interface WritingFeedback {
     positiveFeedback: string;
     suggestions: string[];
+}
+
+export interface WritingEvaluation {
+    contentScore: number;
+    structureScore: number;
+    wordingScore: number;
+    creativityScore: number;
+    feedback: string;
+    imageUrl: string;
 }
 
 
@@ -144,4 +170,19 @@ export interface MathLesson {
     id: number;
     title: string;
     description: string;
+}
+
+export interface ObjectIdentificationResult {
+    name: string;
+    description: string;
+    funFact: string;
+}
+
+export interface EthicalDilemma {
+    scenario: string;
+    choices: string[];
+}
+
+export interface EthicalFeedback {
+    feedback: string;
 }

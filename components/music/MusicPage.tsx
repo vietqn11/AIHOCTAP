@@ -7,13 +7,15 @@ const MusicPage = (props: PageProps) => {
     const [question, setQuestion] = useState('');
     const [answer, setAnswer] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const persona = "một giáo viên âm nhạc thân thiện, người có kiến thức về các bài hát và nhạc cụ";
+
 
     const handleAsk = async () => {
         if (question.trim() === '') return;
         setIsLoading(true);
         setAnswer('');
         try {
-            const response = await generateSimpleChatResponse('Âm nhạc', question);
+            const response = await generateSimpleChatResponse('Âm nhạc', question, persona);
             setAnswer(response);
         } catch (error) {
             setAnswer('Rất tiếc, đã có lỗi xảy ra. Vui lòng thử lại.');
@@ -44,6 +46,12 @@ const MusicPage = (props: PageProps) => {
                 {answer && !isLoading && (
                     <div className="mt-6 p-4 bg-violet-50 border border-violet-200 rounded-md">
                         <p className="text-gray-800 whitespace-pre-wrap">{answer}</p>
+                    </div>
+                )}
+                 {isLoading && question && (
+                    <div className="mt-6 flex justify-center items-center">
+                        <Spinner />
+                        <p className="ml-2 text-gray-600">AI đang nghe...</p>
                     </div>
                 )}
             </div>

@@ -1,12 +1,19 @@
 import React from 'react';
 import { Page, PageProps } from '../../types';
 import SubjectHomePageLayout from '../SubjectHomePageLayout';
-import { NatureIcon } from '../icons/Icons';
+import { NatureIcon, ReadingIcon } from '../icons/Icons';
 
 const NatureHomePage = ({ navigate }: PageProps) => {
     const activities = [
         {
-            name: "Khám phá thế giới",
+            name: "Nhận diện vật thể",
+            description: "Dùng camera để hỏi AI về cây cối, con vật xung quanh em.",
+            icon: <ReadingIcon size="lg" />,
+            onClick: () => navigate(Page.ObjectIdentification),
+            color: "from-teal-500 to-cyan-600 focus:ring-cyan-300",
+        },
+        {
+            name: "Hỏi đáp khoa học",
             description: "Hỏi AI về cây cối, động vật và mọi thứ trong thế giới tự nhiên.",
             icon: <NatureIcon size="lg" />,
             onClick: () => navigate(Page.NatureAndSociety),
