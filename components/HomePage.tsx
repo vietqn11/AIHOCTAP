@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { ArtIcon, EthicsIcon, ExperienceIcon, InformaticsIcon, MathIcon, MusicIcon, NatureIcon, PEIcon, ReadingIcon, WritingIcon } from './icons/Icons';
 
@@ -15,19 +14,37 @@ interface HomePageProps {
   onNavigateToInformatics: () => void;
 }
 
-const SubjectCard: React.FC<{ title: string; icon: React.ReactNode; onClick: () => void; color: string; }> = ({ title, icon, onClick, color }) => (
-  <button
-    onClick={onClick}
-    className={`group flex flex-col items-center justify-center text-center p-4 aspect-square bg-white rounded-2xl shadow-lg border border-gray-200 transition-all transform hover:-translate-y-2 hover:shadow-2xl hover:border-${color}-300`}
-  >
-    <div className={`mb-3 w-16 h-16 flex items-center justify-center bg-${color}-100 rounded-full transition-colors group-hover:bg-${color}-500`}>
-      <div className={`text-${color}-600 group-hover:text-white transition-colors duration-300 transform group-hover:scale-110`}>
-        {icon}
-      </div>
-    </div>
-    <h3 className="text-base font-bold text-gray-800">{title}</h3>
-  </button>
-);
+// Define a map for full, static class names to avoid Tailwind JIT issues with dynamic classes.
+const colorMap: { [key: string]: { border: string; bg: string; groupHoverBg: string; text: string; } } = {
+  blue: { border: 'hover:border-blue-300', bg: 'bg-blue-100', groupHoverBg: 'group-hover:bg-blue-500', text: 'text-blue-600' },
+  green: { border: 'hover:border-green-300', bg: 'bg-green-100', groupHoverBg: 'group-hover:bg-green-500', text: 'text-green-600' },
+  purple: { border: 'hover:border-purple-300', bg: 'bg-purple-100', groupHoverBg: 'group-hover:bg-purple-500', text: 'text-purple-600' },
+  teal: { border: 'hover:border-teal-300', bg: 'bg-teal-100', groupHoverBg: 'group-hover:bg-teal-500', text: 'text-teal-600' },
+  pink: { border: 'hover:border-pink-300', bg: 'bg-pink-100', groupHoverBg: 'group-hover:bg-pink-500', text: 'text-pink-600' },
+  orange: { border: 'hover:border-orange-300', bg: 'bg-orange-100', groupHoverBg: 'group-hover:bg-orange-500', text: 'text-orange-600' },
+  red: { border: 'hover:border-red-300', bg: 'bg-red-100', groupHoverBg: 'group-hover:bg-red-500', text: 'text-red-600' },
+  yellow: { border: 'hover:border-yellow-300', bg: 'bg-yellow-100', groupHoverBg: 'group-hover:bg-yellow-500', text: 'text-yellow-600' },
+  indigo: { border: 'hover:border-indigo-300', bg: 'bg-indigo-100', groupHoverBg: 'group-hover:bg-indigo-500', text: 'text-indigo-600' },
+  gray: { border: 'hover:border-gray-300', bg: 'bg-gray-100', groupHoverBg: 'group-hover:bg-gray-500', text: 'text-gray-600' },
+};
+
+
+const SubjectCard: React.FC<{ title: string; icon: React.ReactNode; onClick: () => void; color: string; }> = ({ title, icon, onClick, color }) => {
+    const colors = colorMap[color] || colorMap.gray; // Fallback to gray for safety
+    return (
+      <button
+        onClick={onClick}
+        className={`group flex flex-col items-center justify-center text-center p-4 aspect-square bg-white rounded-2xl shadow-lg border border-gray-200 transition-all transform hover:-translate-y-2 hover:shadow-2xl ${colors.border}`}
+      >
+        <div className={`mb-3 w-16 h-16 flex items-center justify-center rounded-full transition-colors ${colors.bg} ${colors.groupHoverBg}`}>
+          <div className={`group-hover:text-white transition-colors duration-300 transform group-hover:scale-110 ${colors.text}`}>
+            {icon}
+          </div>
+        </div>
+        <h3 className="text-base font-bold text-gray-800">{title}</h3>
+      </button>
+    );
+};
 
 const HomePage: React.FC<HomePageProps> = (props) => {
   const subjects = [

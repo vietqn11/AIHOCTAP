@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { User, HandwritingFeedback } from '../../types';
 import { evaluateHandwrittenText } from '../../services/geminiService';
@@ -18,6 +17,12 @@ const HandwritingEvaluationPage: React.FC<HandwritingEvaluationPageProps> = ({ u
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const startCamera = useCallback(async () => {
+    // Add a feature check for broader compatibility
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      setError("Tính năng camera không được hỗ trợ trên trình duyệt này. Vui lòng thử trên trình duyệt khác như Chrome hoặc Safari.");
+      return;
+    }
+
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
       if (videoRef.current) {
