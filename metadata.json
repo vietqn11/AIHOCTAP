@@ -1,0 +1,8 @@
+{
+  "name": "Copy of Moi: Trợ lý học tập Lớp 2",
+  "description": "Một ứng dụng web trợ lý học tập toàn diện cho học sinh lớp 2, bao gồm các môn Tiếng Việt, Toán, Tự nhiên & Xã hội, Đạo đức, v.v. Ứng dụng sử dụng AI để tạo ra các hoạt động học tập tương tác và sáng tạo.",
+  "requestFramePermissions": [
+    "microphone",
+    "camera"
+  ]
+}
