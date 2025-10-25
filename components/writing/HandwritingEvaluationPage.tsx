@@ -13,39 +13,67 @@ const HandwritingEvaluationPage: React.FC<HandwritingEvaluationPageProps> = ({ u
   const [imageData, setImageData] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [isCameraActive, setIsCameraActive] = useState(true); // Control camera state explicitly
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const streamRef = useRef<MediaStream | null>(null);
 
+  // Function to stop the camera stream
+  const stopCamera = useCallback(() => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current = null;
+    }
+    if (videoRef.current) {
+        videoRef.current.srcObject = null;
+    }
+  }, []);
+
+  // Function to start the camera stream
   const startCamera = useCallback(async () => {
-    // Add a feature check for broader compatibility
+    setError('');
+    // Stop any existing stream before starting a new one
+    stopCamera(); 
+
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-      setError("Tính năng camera không được hỗ trợ trên trình duyệt này. Vui lòng thử trên trình duyệt khác như Chrome hoặc Safari.");
+      setError("Tính năng camera không được hỗ trợ trên trình duyệt này.");
+      setIsCameraActive(false);
       return;
     }
 
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+      streamRef.current = stream;
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
       }
     } catch (err) {
-      console.error("Camera access denied:", err);
-      setError("Không thể truy cập camera. Vui lòng cấp quyền và thử lại.");
-    }
-  }, []);
-
-  useEffect(() => {
-    startCamera();
-    return () => {
-      if (videoRef.current && videoRef.current.srcObject) {
-        const stream = videoRef.current.srcObject as MediaStream;
-        stream.getTracks().forEach(track => track.stop());
+      console.error("Camera access error:", err);
+      setIsCameraActive(false);
+      if (err instanceof DOMException && (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError')) {
+          setError("Bạn chưa cấp quyền sử dụng camera. Vui lòng cấp quyền trong cài đặt trình duyệt và thử lại.");
+      } else {
+          setError("Không thể truy cập camera. Vui lòng kiểm tra lại thiết bị.");
       }
+    }
+  }, [stopCamera]);
+
+  // Effect to manage the camera based on the isCameraActive state
+  useEffect(() => {
+    if (isCameraActive) {
+      startCamera();
+    } else {
+      stopCamera();
+    }
+
+    // Cleanup function to stop the camera when the component unmounts
+    return () => {
+      stopCamera();
     };
-  }, [startCamera]);
+  }, [isCameraActive, startCamera, stopCamera]);
 
   const handleCapture = () => {
-    if (videoRef.current && canvasRef.current) {
+    if (videoRef.current && canvasRef.current && videoRef.current.srcObject) {
       const video = videoRef.current;
       const canvas = canvasRef.current;
       canvas.width = video.videoWidth;
@@ -55,8 +83,14 @@ const HandwritingEvaluationPage: React.FC<HandwritingEvaluationPageProps> = ({ u
         context.drawImage(video, 0, 0, canvas.width, canvas.height);
         const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
         setImageData(dataUrl);
+        setIsCameraActive(false); // This will trigger the useEffect to stop the camera
       }
     }
+  };
+
+  const handleRetake = () => {
+    setImageData(null);
+    setIsCameraActive(true); // This will trigger the useEffect to start the camera
   };
 
   const handleSubmit = async () => {
@@ -64,7 +98,6 @@ const HandwritingEvaluationPage: React.FC<HandwritingEvaluationPageProps> = ({ u
     setIsLoading(true);
     setError('');
     try {
-      // The base64 string includes the prefix "data:image/jpeg;base64,", we need to remove it.
       const base64String = imageData.split(',')[1];
       const feedback = await evaluateHandwrittenText(base64String);
       onFinish(feedback);
@@ -87,7 +120,7 @@ const HandwritingEvaluationPage: React.FC<HandwritingEvaluationPageProps> = ({ u
           {imageData ? (
             <img src={imageData} alt="Captured essay" className="w-full h-full object-contain" />
           ) : (
-            <video ref={videoRef} autoPlay playsInline className="w-full h-full object-cover"></video>
+            <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover"></video>
           )}
           <canvas ref={canvasRef} className="hidden"></canvas>
         </div>
@@ -96,11 +129,11 @@ const HandwritingEvaluationPage: React.FC<HandwritingEvaluationPageProps> = ({ u
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             {imageData ? (
               <>
-                <button onClick={() => setImageData(null)} className="px-6 py-3 bg-gray-500 text-white font-semibold rounded-full hover:bg-gray-600 transition">Chụp lại</button>
+                <button onClick={handleRetake} className="px-6 py-3 bg-gray-500 text-white font-semibold rounded-full hover:bg-gray-600 transition">Chụp lại</button>
                 <button onClick={handleSubmit} className="px-8 py-4 bg-blue-600 text-white text-xl font-bold rounded-full hover:bg-blue-700 transition">Gửi bài chấm</button>
               </>
             ) : (
-              <button onClick={handleCapture} className="px-8 py-4 bg-red-500 text-white text-xl font-bold rounded-full hover:bg-red-600 transition">📸 Chụp ảnh</button>
+              <button onClick={handleCapture} disabled={!isCameraActive} className="px-8 py-4 bg-red-500 text-white text-xl font-bold rounded-full hover:bg-red-600 transition disabled:bg-gray-400">📸 Chụp ảnh</button>
             )}
           </div>
         )}
