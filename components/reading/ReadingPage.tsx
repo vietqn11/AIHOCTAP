@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Page, PageProps, ReadingEvaluation } from '../../types';
 import { startRecording, stopRecording, blobToBase64 } from '../../utils/audioUtils';
 import { evaluateReading } from '../../services/geminiService';

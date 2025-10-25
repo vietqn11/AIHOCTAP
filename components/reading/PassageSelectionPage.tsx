@@ -13,6 +13,12 @@ const PassageSelectionPage = ({ navigate, context }: PageProps) => {
         }
     };
     
+    const getVolume = (passageId: number): number => {
+      // Simple logic, can be expanded
+      if (passageId <= 3) return 1;
+      return 2;
+    }
+
     return (
         <div className="container mx-auto px-4 py-8">
             <h2 className="text-3xl font-bold text-center text-gray-800 mb-8">
